@@ -1,20 +1,32 @@
-import config from '../config.js'
-var cfg = config()
+import {cfg} from '../config.js'
+import format from '../tools_js/format.js'
 //导入配置文件
-
 if (cfg['runningDate']['enable']===true){
     //模块是否加载
     let runDate = cfg['runningDate']['sartDate']
-    let startDate = new Date(runDate['year'],runDate['month']-1,runDate['day'])
-    document.getElementById('diy_startDate').innerHTML = `本站于${runDate['year']}年${runDate['month']}月${runDate['day']}建立`
-    displayDate()
+    let startDate = new Date(runDate[0],runDate[1]-1,runDate[2],runDate[3],runDate[4],runDate[5])
+    document.getElementById('diy_buildDate').innerHTML = format(cfg['runningDate']['titleTip']['buildTip'],{
+        year:runDate[0],
+        month:runDate[1],
+        day:runDate[2]
+    })
+    if (cfg['runningDate']['reference']!=false){
+        setInterval(displayDate,cfg['runningDate']['reference'])
+    }else{
+        displayDate()
+    }
     function displayDate(){
-        let day = 0
         let nowDate = new Date()
-        console.log(nowDate.getTime())
         let runTime = nowDate - startDate
-        console.log(runTime)
-        let runday = Math.floor(runTime/24/60/60/1000)
-        document.getElementById('diy_runningDate').innerHTML = `已存活${runday}天`
+        let runDay = Math.floor(runTime/24/60/60/1000)
+        let runHour = Math.floor(runTime/60/60/1000%24)
+        let runMinute = Math.floor(runTime/60/1000%(24*60)%60)
+        let runSecond = Math.floor(runTime/1000%(24*60*60)%(24*60)%60)
+        document.getElementById('diy_runDate').innerHTML = format(cfg['runningDate']['titleTip']['runTip'],{
+            day:runDay,
+            hour:runHour,
+            minute:runMinute,
+            second:runSecond
+        })
     }
 }
